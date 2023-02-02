@@ -15,8 +15,13 @@ export default function useCachedResources() {
         // Load fonts
         await Font.loadAsync({
           ...FontAwesome.font,
-          // eslint-disable-next-line global-require
-          'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          /* eslint-disable global-require */
+          GothamLight: require('../assets/fonts/GothamLight.ttf'),
+          GothamBook: require('../assets/fonts/GothamBook.ttf'),
+          GothamMedium: require('../assets/fonts/GothamMedium.ttf'),
+          GothamBold: require('../assets/fonts/GothamBold.ttf'),
+          GothamUltra: require('../assets/fonts/GothamUltra.otf'),
+          /* eslint-enable */
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
