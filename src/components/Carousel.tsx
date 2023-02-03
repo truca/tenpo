@@ -1,29 +1,31 @@
 import React from 'react';
 import {
-  View, ScrollView, Image, StyleSheet, Dimensions,
+  View, ScrollView, StyleSheet, Dimensions,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
-const height = width * 0.8;
 
 export interface CarouselProps {
-  images: string[] | null | undefined
+  height: number;
+  pagingEnabled?: boolean;
+  items: any[] | null | undefined;
 }
 
-export function Carousel({ images }: CarouselProps) {
-  if (!images || !images.length) return null;
+export function Carousel({ items, height, pagingEnabled = false }: CarouselProps) {
+  if (!items || !items.length) return null;
   return (
     <View
-      style={styles.scrollContainer}
+      style={{ ...styles.scrollContainer, height }}
     >
       <ScrollView
         horizontal
-        pagingEnabled
+        pagingEnabled={pagingEnabled}
+        onScrollEndDrag={(e) => {
+          console.log(e.nativeEvent.contentOffset.x);
+        }}
         showsHorizontalScrollIndicator
       >
-        {images.map((imageSrc) => (
-          <Image style={styles.image} source={{ uri: imageSrc }} />
-        ))}
+        {items}
       </ScrollView>
     </View>
   );
@@ -31,10 +33,8 @@ export function Carousel({ images }: CarouselProps) {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    height,
   },
   image: {
     width,
-    height,
   },
 });

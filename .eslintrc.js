@@ -4,6 +4,7 @@ module.exports = {
     'linebreak-style': 0,
     "react/require-default-props": "off",
     "react/react-in-jsx-scope": "off",
+    "global-require": "off",
     "@typescript-eslint/semi": "warn",
     "@typescript-eslint/no-use-before-define": "off",
   },
