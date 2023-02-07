@@ -5,7 +5,7 @@ import {
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import { Brand } from '../../data/brands';
-import StarSvg from '../assets/images/star.svg';
+import StarSvg from '../../assets/images/star.svg';
 
 interface BrandItemProps {
   brand: Brand

@@ -4,7 +4,7 @@ import {
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import { FavoriteProduct } from '../../data/favoriteProducts';
-import StarSvg from '../assets/images/star.svg';
+import StarSvg from '../../assets/images/star.svg';
 
 interface FavoriteItemProps {
   favoriteItem: FavoriteProduct
