@@ -1,5 +1,8 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Alert, StyleSheet, TextInput } from 'react-native';
+import * as Location from 'expo-location';
+
+import { LocationAccuracy } from 'expo-location';
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import LocationSvg from '../../assets/images/location.svg';
@@ -8,6 +11,28 @@ import { View } from '../../components/Themed';
 
 export default function AddressScreen() {
   const [inputValue, setInputValue] = useState('');
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      const userLocation = await Location.getCurrentPositionAsync(
+        { accuracy: LocationAccuracy.Highest },
+      );
+      setLocation(userLocation);
+    })();
+  }, []);
+
+  const position = JSON.stringify(
+    { latitude: location?.coords?.latitude, longitude: location?.coords?.longitude },
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -39,6 +64,14 @@ export default function AddressScreen() {
             Esperando tu ubicación…
           </StyledText>
         </View>
+        <StyledText
+          fontName={FontName.GothamLight}
+          fontSize={18}
+          style={styles.loadingAddress}
+        >
+          {position}
+          {errorMsg}
+        </StyledText>
       </View>
 
     </View>
