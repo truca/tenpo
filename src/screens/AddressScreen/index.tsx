@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Alert, StyleSheet, TextInput } from 'react-native';
 import * as Location from 'expo-location';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
@@ -32,6 +32,8 @@ export default function AddressScreen() {
   const position = JSON.stringify(
     { latitude: location?.coords?.latitude, longitude: location?.coords?.longitude },
   );
+  const lat = location?.coords.latitude;
+  const lng = location?.coords.longitude;
 
   return (
     <View style={styles.container}>
@@ -64,25 +66,24 @@ export default function AddressScreen() {
             Esperando tu ubicación…
           </StyledText>
         </View>
-        {location && (
+        {lat && lng && (
         <MapView
           style={styles.map}
           region={{
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
+            latitude: lat,
+            longitude: lng,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
-        />
-        )}
-        <StyledText
-          fontName={FontName.GothamLight}
-          fontSize={18}
-          style={styles.loadingAddress}
         >
-          {position}
-          {errorMsg}
-        </StyledText>
+          <Marker
+            title="YIKES, Inc."
+            description="Web Design and Developmentt"
+            coordinate={{ latitude: lat, longitude: lng }}
+            icon={require('../../assets/images/marker.png')}
+          />
+        </MapView>
+        )}
       </View>
 
     </View>
