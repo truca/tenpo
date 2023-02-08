@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Alert, StyleSheet, TextInput } from 'react-native';
 import * as Location from 'expo-location';
+import MapView from 'react-native-maps';
 
-import { LocationAccuracy } from 'expo-location';
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import LocationSvg from '../../assets/images/location.svg';
@@ -23,7 +23,7 @@ export default function AddressScreen() {
       }
 
       const userLocation = await Location.getCurrentPositionAsync(
-        { accuracy: LocationAccuracy.Highest },
+        { accuracy: Location.LocationAccuracy.Highest },
       );
       setLocation(userLocation);
     })();
@@ -64,6 +64,17 @@ export default function AddressScreen() {
             Esperando tu ubicación…
           </StyledText>
         </View>
+        {location && (
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+        />
+        )}
         <StyledText
           fontName={FontName.GothamLight}
           fontSize={18}
@@ -78,6 +89,7 @@ export default function AddressScreen() {
   );
 }
 
+// AIzaSyC8fU2DxPo4gAqRbbIHDuZ4bEWnweYDgYE
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -127,5 +139,9 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     position: 'relative',
     bottom: 28,
+  },
+  map: {
+    width: 200,
+    height: 200,
   },
 });
