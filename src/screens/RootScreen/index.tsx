@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, Image, ScrollView,
+  StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
 import Constants from 'expo-constants';
 
@@ -23,11 +23,13 @@ import FavoriteItem from './FavoriteItem';
 const IMAGE_URLS = ['https://cdn.pixabay.com/photo/2017/05/19/07/34/teacup-2325722__340.jpg', 'https://cdn.pixabay.com/photo/2017/05/02/22/43/mushroom-2279558__340.jpg'];
 
 export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>) {
-  const CarouselItems = IMAGE_URLS.map((url) => <CarouselItem imageSrc={url} />);
+  const CarouselItems = IMAGE_URLS.map((url) => <CarouselItem key={url} imageSrc={url} />);
 
-  const BrandItems = BRANDS.map((brand) => <BrandItem brand={brand} />);
+  const BrandItems = BRANDS.map((brand) => <BrandItem key={brand.name} brand={brand} />);
 
-  const CategoryItems = CATEGORIES.map((category) => <CategoryItem category={category} />);
+  const CategoryItems = CATEGORIES.map(
+    (category) => <CategoryItem key={category.name} category={category} />,
+  );
 
   const FavoriteItems = FAVORITE_PRODUCTS.map(
     (favoriteItem) => <FavoriteItem favoriteItem={favoriteItem} />,
@@ -40,17 +42,19 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
         <SearchSvg width={24} height={24} />
       </View>
       <Carousel height={216} pagingEnabled items={CarouselItems} />
-      <View style={styles.addressContainer}>
-        <LocationSvg width={22} height={25} />
-        <View style={styles.addressTextContainer}>
-          <StyledText fontName={FontName.GothamMedium} fontSize={12}>
-            Enviaremos tus pedidos a
-          </StyledText>
-          <StyledText fontName={FontName.GothamLight} fontSize={16} style={styles.address}>
-            Agustinas 546, Santiago, Región…
-          </StyledText>
+      <TouchableOpacity onPress={() => navigation.replace('Address')}>
+        <View style={styles.addressContainer}>
+          <LocationSvg width={22} height={25} />
+          <View style={styles.addressTextContainer}>
+            <StyledText fontName={FontName.GothamMedium} fontSize={12}>
+              Enviaremos tus pedidos a
+            </StyledText>
+            <StyledText fontName={FontName.GothamLight} fontSize={16} style={styles.address}>
+              Agustinas 546, Santiago, Región…
+            </StyledText>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.restaurantsContainer}>
         <StyledText fontName={FontName.GothamBold} fontSize={18} style={styles.restaurantsTitle}>
           Restaurantes
