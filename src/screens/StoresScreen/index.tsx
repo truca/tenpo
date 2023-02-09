@@ -112,7 +112,7 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
               <AntDesign name="checkcircle" size={18} color="#008F7E" />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setFilterClosedStores((prev) => !prev)}>
+          <TouchableOpacity onPress={() => navigation.navigate('MyModal')}>
             <View style={styles.storeFilter}>
               <StyledText
                 fontName={FontName.GothamBook}
