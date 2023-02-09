@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import {
+  useState, useEffect, useCallback, useContext,
+} from 'react';
 import {
   Alert, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
@@ -13,13 +15,14 @@ import LocationSvg from '../../assets/images/location.svg';
 import { View } from '../../components/Themed';
 import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
 import { RootStackScreenProps } from '../../types';
+import { AddressContext } from '../../contexts/AddressContext';
 
 export default function AddressScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [addressSecondLine, setAddressSecondLine] = useState('');
-  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-  const [place, setPlace] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const {
+    address, setAddress, coords, setCoords,
+  } = useContext(AddressContext);
 
   const fetchPlace = useCallback(
     async (locationArg: Location.LocationObjectCoords | null) => {
@@ -27,17 +30,17 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         const results = await axios.get(
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationArg?.latitude},${locationArg?.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
         );
-        setPlace(results.data.results[0].formatted_address);
+        setAddress(results.data.results[0].formatted_address);
       }
     },
-    [],
+    [setAddress],
   );
 
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        Alert.alert('Permiso para acceder a la ubicación fue denegado');
         return;
       }
 
@@ -45,16 +48,13 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         { accuracy: Location.LocationAccuracy.Highest },
       );
       if (userLocation) {
-        setLocation(userLocation.coords);
+        setCoords({ lat: userLocation.coords.latitude, lng: userLocation.coords.longitude });
         fetchPlace(userLocation.coords);
       } else {
         Alert.alert('Error getting your location!');
       }
     })();
-  }, [fetchPlace]);
-
-  const lat = location?.latitude;
-  const lng = location?.longitude;
+  }, [fetchPlace, setCoords]);
 
   return (
     <View style={styles.container}>
@@ -74,16 +74,16 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         <TextInput
           style={styles.input}
           onChangeText={setInputValue}
-          value={inputValue}
+          value={address || inputValue}
           placeholder="Escribe tu dirección"
         />
-        {lat && lng && (
+        {coords ? (
           <>
             <MapView
               style={styles.map}
               region={{
-                latitude: lat,
-                longitude: lng,
+                latitude: coords.lat,
+                longitude: coords.lng,
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
               }}
@@ -91,7 +91,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
               <Marker
                 title="YIKES, Inc."
                 description="Web Design and Developmentt"
-                coordinate={{ latitude: lat, longitude: lng }}
+                coordinate={{ latitude: coords.lat, longitude: coords.lng }}
                 icon={require('../../assets/images/marker.png')}
               />
             </MapView>
@@ -129,32 +129,20 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
                   </StyledText>
                 </View>
               </TouchableOpacity>
-              {place && (
-              <StyledText
-                fontName={FontName.GothamBook}
-                fontSize={12}
-                style={styles.addressSecondLineTitle}
-              >
-                {place}
-              </StyledText>
-              )}
             </View>
           </>
-        )}
-
-        {(!lat || !lng) && (
-        <View style={styles.loadingContainer}>
-          <StyledText
-            fontName={FontName.GothamBold}
-            fontSize={14}
-            style={styles.loadingAddress}
-          >
-            Esperando tu ubicación…
-          </StyledText>
-        </View>
+        ) : (
+          <View style={styles.loadingContainer}>
+            <StyledText
+              fontName={FontName.GothamBold}
+              fontSize={14}
+              style={styles.loadingAddress}
+            >
+              Esperando tu ubicación…
+            </StyledText>
+          </View>
         )}
       </View>
-
     </View>
   );
 }

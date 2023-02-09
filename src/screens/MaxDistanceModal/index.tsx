@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import {
   StyleSheet, View,
 } from 'react-native';
@@ -10,12 +10,14 @@ import { FontName } from '../../components/StyledText/types';
 import { RootStackScreenProps } from '../../types';
 import HalfModal from '../../components/HalfModal';
 import Slider from '../../components/Slider';
+import { AddressContext } from '../../contexts/AddressContext';
 
 export default function MaxDistanceModal({ navigation, route }: RootStackScreenProps<'MaxDistanceModal'>) {
-  const [maxDistance, setMaxDistance] = useState(1);
+  const { coords, maxDistance, setMaxDistance } = useContext(AddressContext);
 
-  const lat = -33.4284912;
-  const lng = -70.609782;
+  if (!coords) return null;
+
+  const { lat, lng } = coords;
   return (
     <HalfModal
       route={route}

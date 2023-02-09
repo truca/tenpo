@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
@@ -19,11 +19,13 @@ import CarouselItem from './CarouselItem';
 import BrandItem from './BrandItem';
 import CategoryItem from './CategoryItem';
 import FavoriteItem from './FavoriteItem';
+import { AddressContext } from '../../contexts/AddressContext';
 
 const IMAGE_URLS = ['https://cdn.pixabay.com/photo/2017/05/19/07/34/teacup-2325722__340.jpg', 'https://cdn.pixabay.com/photo/2017/05/02/22/43/mushroom-2279558__340.jpg'];
 
 export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const CarouselItems = IMAGE_URLS.map((url) => <CarouselItem key={url} imageSrc={url} />);
+  const { address } = useContext(AddressContext);
 
   const BrandItems = BRANDS.map((brand) => <BrandItem key={brand.name} brand={brand} />);
 
@@ -52,7 +54,7 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
               Enviaremos tus pedidos a
             </StyledText>
             <StyledText fontName={FontName.GothamLight} fontSize={16} style={styles.address}>
-              Agustinas 546, Santiago, Región…
+              {address || '-'}
             </StyledText>
           </View>
         </View>

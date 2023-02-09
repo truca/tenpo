@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import {
+  useState, useEffect, useCallback, useContext,
+} from 'react';
 import {
   Alert, StyleSheet, TextInput, TouchableOpacity, Image,
 } from 'react-native';
@@ -10,6 +12,7 @@ import LocationSvg from '../../assets/images/location.svg';
 
 import { View } from '../../components/Themed';
 import { RootStackScreenProps } from '../../types';
+import { AddressContext } from '../../contexts/AddressContext';
 
 export interface Store {
   id: number,
@@ -56,7 +59,7 @@ const STORES: Store[] = [{
 export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [filterClosedStores, setFilterClosedStores] = useState<boolean>(false);
-  const [maxDistance, setMaxDistance] = useState(1);
+  const { maxDistance } = useContext(AddressContext);
 
   return (
     <View style={styles.container}>
