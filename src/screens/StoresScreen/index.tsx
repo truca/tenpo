@@ -112,7 +112,7 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
               <AntDesign name="checkcircle" size={18} color="#008F7E" />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('MyModal')}>
+          <TouchableOpacity onPress={() => navigation.navigate('MaxDistanceModal')}>
             <View style={styles.storeFilter}>
               <StyledText
                 fontName={FontName.GothamBook}

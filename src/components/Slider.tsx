@@ -36,11 +36,13 @@ export default function Slider({
         }}
         renderTrackMarkComponent={(idx: number) => {
           if (idx + 1 === value) return null;
+          const isLastTrackMark = idx + 1 === trackMarks?.length;
           return (
             <View style={{
               width: 12,
               height: 12,
               borderRadius: 6,
+              marginLeft: isLastTrackMark ? 5 : 0,
               backgroundColor: '#00BAA4',
             }}
             />

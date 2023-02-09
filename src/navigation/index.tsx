@@ -12,7 +12,7 @@ import ModalScreen from '../screens/ModalScreen';
 import RootScreen from '../screens/RootScreen';
 import AddressScreen from '../screens/AddressScreen';
 import StoresScreen from '../screens/StoresScreen';
-import HalfModalScreen from '../components/HalfModal';
+import MaxDistanceModal from '../screens/MaxDistanceModal';
 import { RootStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -48,7 +48,7 @@ function RootNavigator() {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="MyModal" component={HalfModalScreen} />
+        <Stack.Screen name="MaxDistanceModal" component={MaxDistanceModal} />
       </Stack.Group>
     </Stack.Navigator>
   );

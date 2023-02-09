@@ -22,7 +22,17 @@ const styles = StyleSheet.create({
   },
 });
 
-function ModalScreen({ navigation }: RootStackScreenProps<'MyModal'>) {
+interface HalfModalInternalProps {
+  containerStyle: any,
+  content: any,
+  percentageHeight?: number
+}
+
+type HalfModalProps = HalfModalInternalProps & RootStackScreenProps<'MaxDistanceModal'>;
+
+function HalfModal({
+  navigation, containerStyle, content, percentageHeight = 0.5,
+}: HalfModalProps) {
   const { height } = useWindowDimensions();
   const { current } = useCardAnimation();
 
@@ -49,7 +59,7 @@ function ModalScreen({ navigation }: RootStackScreenProps<'MyModal'>) {
               {
                 translateY: current.progress.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [height, height * 0.5],
+                  outputRange: [height, height * percentageHeight],
                   extrapolate: 'clamp',
                 }),
               },
@@ -58,25 +68,29 @@ function ModalScreen({ navigation }: RootStackScreenProps<'MyModal'>) {
           styles.viewAnimated,
         ]}
       >
-        <View style={styles.viewContainer}>
-          <Text>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Text>
-          <Button
-            title="Close Modal"
-            onPress={navigation.goBack}
-          />
+        <View style={[styles.viewContainer, containerStyle]}>
+          {content || (
+          <>
+            <Text>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of type
+              and scrambled it to make a type specimen book. It has survived not
+              only five centuries, but also the leap into electronic typesetting,
+              remaining essentially unchanged. It was popularised in the 1960s
+              with the release of Letraset sheets containing Lorem Ipsum passages,
+              and more recently with desktop publishing software like Aldus
+              PageMaker including versions of Lorem Ipsum.
+            </Text>
+            <Button
+              title="Close Modal"
+              onPress={navigation.goBack}
+            />
+          </>
+          )}
         </View>
       </Animated.View>
     </View>
   );
 }
-export default ModalScreen;
+export default HalfModal;
