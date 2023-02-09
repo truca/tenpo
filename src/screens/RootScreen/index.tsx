@@ -25,12 +25,13 @@ import { AddressContext } from '../../contexts/AddressContext';
 const IMAGE_URLS = [MotoBoy, MotoBoy, MotoBoy];
 
 export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>) {
+  // The images are static and they won't change, so it's safe to use their Id
   const CarouselItems = IMAGE_URLS.map((url, idx) => <CarouselItem key={idx} imageSrc={url} />);
   const { address } = useContext(AddressContext);
 
   const BrandItems = BRANDS.map((brand) => (
-    <TouchableOpacity onPress={() => navigation.navigate('StoreModal')}>
-      <BrandItem key={brand.name} brand={brand} />
+    <TouchableOpacity key={brand.name} onPress={() => navigation.navigate('StoreModal')}>
+      <BrandItem brand={brand} />
     </TouchableOpacity>
   ));
 
@@ -39,7 +40,7 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
   );
 
   const FavoriteItems = FAVORITE_PRODUCTS.map(
-    (favoriteItem) => <FavoriteItem favoriteItem={favoriteItem} />,
+    (favoriteItem) => <FavoriteItem key={favoriteItem.name} favoriteItem={favoriteItem} />,
   );
 
   return (
