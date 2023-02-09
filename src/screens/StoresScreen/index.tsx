@@ -1,65 +1,33 @@
 import {
-  useState, useEffect, useCallback, useContext,
+  useState, useContext, useMemo,
 } from 'react';
 import {
-  Alert, StyleSheet, TextInput, TouchableOpacity, Image,
+  StyleSheet, TextInput, TouchableOpacity, Image,
 } from 'react-native';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
-import LocationSvg from '../../assets/images/location.svg';
 
 import { View } from '../../components/Themed';
 import { RootStackScreenProps } from '../../types';
 import { AddressContext } from '../../contexts/AddressContext';
-
-export interface Store {
-  id: number,
-  logo: any,
-  name: string,
-  address: string,
-  isOpen: boolean,
-  distance: number,
-}
-
-const STORES: Store[] = [{
-  id: 1,
-  logo: require('../../assets/images/melt.png'),
-  name: 'Melt Bilbao',
-  address: 'Av. Francisco Bilbao 3975, La Reina',
-  isOpen: true,
-  distance: 1,
-},
-{
-  id: 2,
-  logo: require('../../assets/images/melt.png'),
-  name: 'Melt pajaritos',
-  address: 'Melt Pajaritos Americo Vespucio 51 - Local 128, Pajaritos, Maipú',
-  isOpen: false,
-  distance: 1,
-},
-{
-  id: 3,
-  logo: require('../../assets/images/melt.png'),
-  name: 'Melt Barrio Brasil',
-  address: 'Compañía de Jesús 1909, Santiago',
-  isOpen: false,
-  distance: 3,
-},
-{
-  id: 4,
-  logo: require('../../assets/images/melt.png'),
-  name: 'Melt El Bosque',
-  address: 'Callao 2912, Las Condes',
-  isOpen: true,
-  distance: 5,
-}];
+import { STORES } from './stores';
 
 export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [filterClosedStores, setFilterClosedStores] = useState<boolean>(false);
   const { maxDistance } = useContext(AddressContext);
+
+  const filteredStores = useMemo(() => {
+    if (!inputValue) return [];
+    return STORES.filter((store) => {
+      const isWithinDistance = store.distance <= maxDistance;
+      const matchesOpenState = filterClosedStores ? store.isOpen : true;
+
+      return isWithinDistance && matchesOpenState;
+    });
+  }, [inputValue, maxDistance, filterClosedStores]);
 
   return (
     <View style={styles.container}>
@@ -137,12 +105,7 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
           </TouchableOpacity>
         </View>
         )}
-        {inputValue && STORES.filter((store) => {
-          const isWithinDistance = store.distance <= maxDistance;
-          const matchesOpenState = filterClosedStores ? store.isOpen : true;
-
-          return isWithinDistance && matchesOpenState;
-        }).map((store) => (
+        {filteredStores.map((store) => (
           <View style={styles.storeOption} key={store.id}>
             <Image style={styles.storeLogo} source={store.logo} />
             <View style={styles.storeOptionDescription}>
