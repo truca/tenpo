@@ -39,7 +39,9 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image style={styles.avatar} source={Avatar} />
-        <SearchSvg width={24} height={24} />
+        <TouchableOpacity onPress={() => navigation.replace('Address')}>
+          <SearchSvg width={24} height={24} />
+        </TouchableOpacity>
       </View>
       <Carousel height={216} pagingEnabled items={CarouselItems} />
       <TouchableOpacity onPress={() => navigation.replace('Address')}>

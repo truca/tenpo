@@ -12,8 +12,9 @@ import LocationSvg from '../../assets/images/location.svg';
 
 import { View } from '../../components/Themed';
 import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
+import { RootStackScreenProps } from '../../types';
 
-export default function AddressScreen() {
+export default function AddressScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [addressSecondLine, setAddressSecondLine] = useState('');
   const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
@@ -117,7 +118,7 @@ export default function AddressScreen() {
                 numberOfLines={5}
                 underlineColorAndroid="transparent"
               />
-              <TouchableOpacity onPress={() => Alert.alert('Submit')}>
+              <TouchableOpacity onPress={() => navigation.replace('Stores')}>
                 <View style={styles.submitButton}>
                   <StyledText
                     fontName={FontName.GothamBook}

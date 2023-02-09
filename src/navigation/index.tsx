@@ -11,6 +11,7 @@ import { ColorSchemeName } from 'react-native';
 import ModalScreen from '../screens/ModalScreen';
 import RootScreen from '../screens/RootScreen';
 import AddressScreen from '../screens/AddressScreen';
+import StoresScreen from '../screens/StoresScreen';
 import { RootStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -36,6 +37,7 @@ function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="Root" component={RootScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Address" component={AddressScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Stores" component={StoresScreen} options={{ headerShown: false }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
