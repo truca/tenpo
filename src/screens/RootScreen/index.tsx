@@ -56,12 +56,28 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
         <View style={styles.addressContainer}>
           <LocationSvg width={22} height={25} />
           <View style={styles.addressTextContainer}>
-            <StyledText fontName={FontName.GothamMedium} fontSize={12}>
-              Enviaremos tus pedidos a
-            </StyledText>
-            <StyledText fontName={FontName.GothamLight} fontSize={16} style={styles.address}>
-              {address || '-'}
-            </StyledText>
+            {address ? (
+              <>
+                <StyledText fontName={FontName.GothamMedium} fontSize={12} style={styles.address}>
+                  Enviaremos tus pedidos a
+                </StyledText>
+                <StyledText
+                  fontName={FontName.GothamLight}
+                  fontSize={16}
+                  style={styles.addressLine2}
+                >
+                  {address || '-'}
+                </StyledText>
+              </>
+            ) : (
+              <StyledText
+                fontName={FontName.GothamLight}
+                fontSize={16}
+                style={styles.addressInstruction}
+              >
+                Agregar dirección de entrega
+              </StyledText>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -125,7 +141,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     color: '#008F7E',
   },
-  address: { marginTop: 4 },
+  address: {
+    color: '#008F7E',
+    lineHeight: 16,
+  },
+  addressLine2: {
+    color: '#008F7E',
+    lineHeight: 22,
+  },
+  addressInstruction: {
+    color: '#008F7E',
+    lineHeight: 22,
+  },
   addressTextContainer: {
     display: 'flex',
     backgroundColor: '#D4F9F5',
