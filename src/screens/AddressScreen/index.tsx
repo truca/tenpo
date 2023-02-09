@@ -67,6 +67,21 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
     [setAddress],
   );
 
+  const fetchPlaceFromPlaceId = useCallback(
+    async (placeId: string) => {
+      const results = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&fields=address_component,geometry,formatted_address,name&language=es&key=${GOOGLE_MAPS_API_KEY}`,
+      );
+      const newAddress = results.data.result.formatted_address;
+      const { lat, lng } = results.data.result.geometry.location;
+      if (newAddress.length > 31) setAddress(`${newAddress.substr(0, 31)}…`);
+      else setAddress(newAddress);
+
+      setCoords({ lat, lng });
+    },
+    [setAddress, setCoords],
+  );
+
   const fetchCurrentPosition = useCallback(async () => {
     setIsLoadingGeolocation(true);
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -204,7 +219,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         {!address && options.length > 0 && (
         <View style={styles.optionsContainer}>
           { options.map((option) => (
-            <TouchableOpacity onPress={() => navigation.navigate('StoreModal')}>
+            <TouchableOpacity onPress={() => fetchPlaceFromPlaceId(option.value)}>
               <View style={styles.addressOption} key={option.value}>
                 <View style={styles.addressOptionDescription}>
                   <StyledText
