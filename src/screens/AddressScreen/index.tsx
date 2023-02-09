@@ -12,6 +12,7 @@ import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import LocationSvg from '../../assets/images/location.svg';
 import ClearSvg from '../../assets/images/clear.svg';
+import SearchSvg from '../../assets/images/search.svg';
 
 import { View } from '../../components/Themed';
 import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
@@ -82,20 +83,25 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
             placeholder="Escribe tu dirección"
           />
 
-          {address && (
-          <TouchableOpacity
-            style={{
-              zIndex: 2, position: 'absolute', right: 25, top: -8,
-            }}
-            onPress={clearFullAddress}
-          >
-            <ClearSvg
-              width={19}
-              height={19}
-            />
-          </TouchableOpacity>
+          {address ? (
+            <TouchableOpacity
+              style={{
+                zIndex: 2, position: 'absolute', right: 25, top: -12,
+              }}
+              onPress={clearFullAddress}
+            >
+              <ClearSvg width={24} height={24} />
+            </TouchableOpacity>
+          ) : inputValue && (
+            <TouchableOpacity
+              style={{
+                zIndex: 2, position: 'absolute', right: 25, top: -12,
+              }}
+              onPress={clearFullAddress}
+            >
+              <SearchSvg width={24} height={24} />
+            </TouchableOpacity>
           )}
-
         </View>
         {coords ? (
           <>
