@@ -1,20 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
-  Alert, Button, StyleSheet, TextInput, TouchableOpacity,
+  Alert, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
+import axios from 'axios';
 
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import LocationSvg from '../../assets/images/location.svg';
 
 import { View } from '../../components/Themed';
+import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
 
 export default function AddressScreen() {
   const [inputValue, setInputValue] = useState('');
   const [addressSecondLine, setAddressSecondLine] = useState('');
   const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
+  const [place, setPlace] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,9 +31,26 @@ export default function AddressScreen() {
       const userLocation = await Location.getCurrentPositionAsync(
         { accuracy: Location.LocationAccuracy.Highest },
       );
-      setLocation(userLocation.coords);
+      if (userLocation) {
+        setLocation(userLocation.coords);
+        fetchPlace(userLocation.coords);
+      } else {
+        Alert.alert('Error getting your location!');
+      }
     })();
   }, []);
+
+  const fetchPlace = useCallback(
+    async (locationArg: Location.LocationObjectCoords | null) => {
+      if (locationArg) {
+        const results = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationArg?.latitude},${locationArg?.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
+        );
+        setPlace(results.data.results[0].formatted_address);
+      }
+    },
+    [],
+  );
 
   const lat = location?.latitude;
   const lng = location?.longitude;
@@ -108,6 +128,15 @@ export default function AddressScreen() {
                   </StyledText>
                 </View>
               </TouchableOpacity>
+              {place && (
+              <StyledText
+                fontName={FontName.GothamBook}
+                fontSize={12}
+                style={styles.addressSecondLineTitle}
+              >
+                {place}
+              </StyledText>
+              )}
             </View>
           </>
         )}
@@ -129,7 +158,6 @@ export default function AddressScreen() {
   );
 }
 
-// AIzaSyC8fU2DxPo4gAqRbbIHDuZ4bEWnweYDgYE
 const styles = StyleSheet.create({
   container: {
     flex: 1,
