@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   StyleSheet, View,
 } from 'react-native';
+import MapView, { Marker, Circle } from 'react-native-maps';
 
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
@@ -13,6 +14,8 @@ import Slider from '../../components/Slider';
 export default function MaxDistanceModal({ navigation, route }: RootStackScreenProps<'MaxDistanceModal'>) {
   const [maxDistance, setMaxDistance] = useState(1);
 
+  const lat = -33.4284912;
+  const lng = -70.609782;
   return (
     <HalfModal
       route={route}
@@ -36,6 +39,22 @@ export default function MaxDistanceModal({ navigation, route }: RootStackScreenP
             Puedes modificar el radio de distancia para encontrar tu restaurante
           </StyledText>
           <View style={styles.sliderContainer}>
+            <View style={styles.sliderLabels}>
+              <StyledText
+                fontName={FontName.GothamBold}
+                fontSize={12}
+                style={styles.sliderLabel}
+              >
+                1 km
+              </StyledText>
+              <StyledText
+                fontName={FontName.GothamBold}
+                fontSize={12}
+                style={styles.sliderLabel}
+              >
+                5 km
+              </StyledText>
+            </View>
             <Slider
               value={maxDistance}
               setValue={setMaxDistance}
@@ -44,6 +63,33 @@ export default function MaxDistanceModal({ navigation, route }: RootStackScreenP
               trackMarks={[1, 2, 3, 4, 5]}
             />
           </View>
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: lat,
+              longitude: lng,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              title="YIKES, Inc."
+              description="Web Design and Developmentt"
+              coordinate={{ latitude: lat, longitude: lng }}
+              icon={require('../../assets/images/marker.png')}
+            />
+            <Circle
+              key={(lng + lat).toString()}
+              center={{
+                latitude: lat,
+                longitude: lng,
+              }}
+              radius={maxDistance * 1000}
+              strokeWidth={1}
+              strokeColor="#008F7E"
+              fillColor="#008F7E30"
+            />
+          </MapView>
         </>
       )}
     />
@@ -73,5 +119,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F2F2',
     width: '100%',
     height: 88,
+    paddingTop: 22,
+    position: 'relative',
+  },
+  map: {
+    width: '100%',
+    flex: 1,
+  },
+  sliderLabels: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    top: 22,
+    paddingHorizontal: 5,
+  },
+  sliderLabel: {
+    color: '#008F7E',
+    lineHeight: 16,
+    textTransform: 'uppercase',
   },
 });
