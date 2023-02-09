@@ -7,6 +7,7 @@ import {
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
@@ -19,12 +20,38 @@ import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
 import { RootStackScreenProps } from '../../types';
 import { AddressContext } from '../../contexts/AddressContext';
 
+interface Option {
+  label: string;
+  description: string;
+  value: string;
+}
+
 export default function AddressScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
+  const [options, setOptions] = useState<Option[]>([]);
+  const [isLoadingGeolocation, setIsLoadingGeolocation] = useState<boolean>(false);
   const [addressSecondLine, setAddressSecondLine] = useState('');
   const {
     address, setAddress, coords, setCoords, clearFullAddress,
   } = useContext(AddressContext);
+
+  const fetchAutocomplete = useCallback(async (filter: string) => {
+    const results = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${filter}&components=country:CL&key=${GOOGLE_MAPS_API_KEY}`,
+    );
+    const newOptions = results.data.predictions.map(
+      (prediction: any) => {
+        const mainText = prediction.structured_formatting.main_text;
+        const fullText = prediction.description;
+        return ({
+          label: mainText,
+          description: fullText.substr(mainText.length + 2),
+          value: prediction.place_id,
+        });
+      },
+    );
+    setOptions(newOptions);
+  }, [setOptions]);
 
   const fetchPlace = useCallback(
     async (locationArg: Location.LocationObjectCoords | null) => {
@@ -40,24 +67,27 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
     [setAddress],
   );
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permiso para acceder a la ubicación fue denegado');
-        return;
-      }
+  const fetchCurrentPosition = useCallback(async () => {
+    setIsLoadingGeolocation(true);
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setIsLoadingGeolocation(false);
+      Alert.alert('Permiso para acceder a la ubicación fue denegado');
+      return;
+    }
 
-      const userLocation = await Location.getCurrentPositionAsync(
-        { accuracy: Location.LocationAccuracy.Highest },
-      );
-      if (userLocation) {
-        setCoords({ lat: userLocation.coords.latitude, lng: userLocation.coords.longitude });
-        fetchPlace(userLocation.coords);
-      } else {
-        Alert.alert('Error getting your location!');
-      }
-    })();
+    const userLocation = await Location.getCurrentPositionAsync(
+      { accuracy: Location.LocationAccuracy.Highest },
+    );
+    setIsLoadingGeolocation(false);
+    if (userLocation) {
+      setOptions([]);
+      setInputValue('');
+      setCoords({ lat: userLocation.coords.latitude, lng: userLocation.coords.longitude });
+      fetchPlace(userLocation.coords);
+    } else {
+      Alert.alert('Error getting your location!');
+    }
   }, [fetchPlace, setCoords]);
 
   return (
@@ -97,7 +127,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
               style={{
                 zIndex: 2, position: 'absolute', right: 25, top: -12,
               }}
-              onPress={clearFullAddress}
+              onPress={() => fetchAutocomplete(inputValue)}
             >
               <SearchSvg width={24} height={24} />
             </TouchableOpacity>
@@ -158,6 +188,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
             </View>
           </>
         ) : (
+          !options.length && isLoadingGeolocation && (
           <View style={styles.loadingContainer}>
             <StyledText
               fontName={FontName.GothamBold}
@@ -167,6 +198,48 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
               Esperando tu ubicación…
             </StyledText>
           </View>
+          )
+        )}
+
+        {!address && options.length > 0 && (
+        <View style={styles.optionsContainer}>
+          { options.map((option) => (
+            <TouchableOpacity onPress={() => navigation.navigate('StoreModal')}>
+              <View style={styles.addressOption} key={option.value}>
+                <View style={styles.addressOptionDescription}>
+                  <StyledText
+                    fontName={FontName.GothamMedium}
+                    fontSize={18}
+                    style={styles.addressOptionName}
+                  >
+                    {option.label}
+                  </StyledText>
+                  <StyledText
+                    fontName={FontName.RobotoRegular}
+                    fontSize={12}
+                    style={styles.addressOptionAddress}
+                  >
+                    {option.description}
+                  </StyledText>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={fetchCurrentPosition}>
+            <View style={[styles.addressOption, styles.useLocationOption]}>
+              <MaterialCommunityIcons name="target" size={26} color="#00BAA4" />
+              <View style={styles.addressOptionDescription}>
+                <StyledText
+                  fontName={FontName.GothamMedium}
+                  fontSize={14}
+                  style={styles.useLocationText}
+                >
+                  Buscar por ubicación
+                </StyledText>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
         )}
       </View>
     </View>
@@ -279,5 +352,41 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     lineHeight: 20,
     fontWeight: '700',
+  },
+
+  optionsContainer: {
+    backgroundColor: 'transparent',
+    paddingTop: 25,
+  },
+  addressOption: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    borderBottomColor: '#F2F2F2',
+    borderStyle: 'solid',
+  },
+  addressOptionDescription: {
+    backgroundColor: 'transparent',
+    marginLeft: 14,
+  },
+  addressOptionName: {
+    color: '#333333',
+    lineHeight: 22,
+  },
+  addressOptionAddress: {
+    color: '#ADADAD',
+    lineHeight: 16,
+  },
+  useLocationOption: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  useLocationText: {
+    color: '#00BAA4',
+    lineHeight: 20,
   },
 });
