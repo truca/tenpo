@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Alert, StyleSheet, TextInput, TouchableOpacity,
+  Alert, StyleSheet, TextInput, TouchableOpacity, Image,
 } from 'react-native';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -11,8 +11,52 @@ import LocationSvg from '../../assets/images/location.svg';
 import { View } from '../../components/Themed';
 import { RootStackScreenProps } from '../../types';
 
+export interface Store {
+  id: number,
+  logo: any,
+  name: string,
+  address: string,
+  isOpen: boolean,
+  distance: number,
+}
+
+const STORES: Store[] = [{
+  id: 1,
+  logo: require('../../assets/images/melt.png'),
+  name: 'Melt Bilbao',
+  address: 'Av. Francisco Bilbao 3975, La Reina',
+  isOpen: true,
+  distance: 1,
+},
+{
+  id: 2,
+  logo: require('../../assets/images/melt.png'),
+  name: 'Melt pajaritos',
+  address: 'Melt Pajaritos Americo Vespucio 51 - Local 128, Pajaritos, Maipú',
+  isOpen: false,
+  distance: 1,
+},
+{
+  id: 3,
+  logo: require('../../assets/images/melt.png'),
+  name: 'Melt Barrio Brasil',
+  address: 'Compañía de Jesús 1909, Santiago',
+  isOpen: false,
+  distance: 3,
+},
+{
+  id: 4,
+  logo: require('../../assets/images/melt.png'),
+  name: 'Melt El Bosque',
+  address: 'Callao 2912, Las Condes',
+  isOpen: true,
+  distance: 5,
+}];
+
 export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
+  const [filterClosedStores, setFilterClosedStores] = useState<boolean>(false);
+  const [maxDistance, setMaxDistance] = useState(1);
 
   return (
     <View style={styles.container}>
@@ -52,6 +96,70 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
           value={inputValue}
           placeholder="Escribe nombre del restaurante que búscas"
         />
+        {inputValue && (
+        <View style={styles.storeFiltersContainer}>
+          <TouchableOpacity onPress={() => setFilterClosedStores((prev) => !prev)}>
+            <View
+              style={[styles.storeFilter, filterClosedStores ? {} : styles.storeFilterDisabled]}
+            >
+              <StyledText
+                fontName={FontName.GothamBook}
+                fontSize={12}
+                style={[styles.subtitle, styles.storesFilterText]}
+              >
+                Solo locales abiertos
+              </StyledText>
+              <AntDesign name="checkcircle" size={18} color="#008F7E" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setFilterClosedStores((prev) => !prev)}>
+            <View style={styles.storeFilter}>
+              <StyledText
+                fontName={FontName.GothamBook}
+                fontSize={12}
+                style={[styles.subtitle, styles.storesFilterText]}
+              >
+                Área de búsqueda:
+              </StyledText>
+              <StyledText
+                fontName={FontName.GothamBold}
+                fontSize={12}
+                style={styles.subtitle}
+              >
+                {maxDistance}
+                {' '}
+                KM
+              </StyledText>
+            </View>
+          </TouchableOpacity>
+        </View>
+        )}
+        {inputValue && STORES.filter((store) => {
+          const isWithinDistance = store.distance <= maxDistance;
+          const matchesOpenState = filterClosedStores ? store.isOpen : true;
+
+          return isWithinDistance && matchesOpenState;
+        }).map((store) => (
+          <View style={styles.storeOption} key={store.id}>
+            <Image style={styles.storeLogo} source={store.logo} />
+            <View style={styles.storeOptionDescription}>
+              <StyledText
+                fontName={FontName.GothamMedium}
+                fontSize={18}
+                style={styles.storeOptionName}
+              >
+                {store.name}
+              </StyledText>
+              <StyledText
+                fontName={FontName.RobotoRegular}
+                fontSize={12}
+                style={styles.storeOptionAddress}
+              >
+                {store.address}
+              </StyledText>
+            </View>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -101,6 +209,67 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#008F7E',
   },
+  storeFiltersContainer: {
+    backgroundColor: '#F2F2F2',
+    height: 100,
+    paddingBottom: 18,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    alignItems: 'flex-end',
+    width: '100%',
+  },
+  storeFilter: {
+    borderColor: '#008F7E',
+    borderRadius: 4,
+    borderWidth: 2,
+    borderStyle: 'solid',
+    backgroundColor: 'transparent',
+    display: 'flex',
+    flexDirection: 'row',
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    height: 32,
+  },
+  storeFilterDisabled: {
+    opacity: 0.3,
+  },
+  storesFilterText: {
+    marginRight: 8,
+  },
+  distanceFilterValue: {
+    color: '#008F7E',
+    lineHeight: 16,
+  },
+  storeOption: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    borderBottomColor: '#F2F2F2',
+    borderStyle: 'solid',
+  },
+  storeLogo: {
+    width: 40,
+    height: 40,
+  },
+  storeOptionDescription: {
+    backgroundColor: 'transparent',
+    marginLeft: 14,
+  },
+  storeOptionName: {
+    color: '#333333',
+    lineHeight: 22,
+  },
+  storeOptionAddress: {
+    color: '#ADADAD',
+    lineHeight: 16,
+  },
+
   loadingContainer: {
     width: '100%',
     backgroundColor: 'transparent',
