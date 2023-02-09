@@ -21,6 +21,18 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
   const [place, setPlace] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const fetchPlace = useCallback(
+    async (locationArg: Location.LocationObjectCoords | null) => {
+      if (locationArg) {
+        const results = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationArg?.latitude},${locationArg?.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
+        );
+        setPlace(results.data.results[0].formatted_address);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -39,19 +51,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         Alert.alert('Error getting your location!');
       }
     })();
-  }, []);
-
-  const fetchPlace = useCallback(
-    async (locationArg: Location.LocationObjectCoords | null) => {
-      if (locationArg) {
-        const results = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationArg?.latitude},${locationArg?.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
-        );
-        setPlace(results.data.results[0].formatted_address);
-      }
-    },
-    [],
-  );
+  }, [fetchPlace]);
 
   const lat = location?.latitude;
   const lng = location?.longitude;
@@ -207,10 +207,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 22,
     paddingHorizontal: 24,
-    shadowColor: '#00000029',
-    shadowOffset: { width: 0, height: 3 },
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.29,
-    shadowRadius: 0,
+    shadowRadius: 3,
+    elevation: 20,
     position: 'absolute',
     top: -28,
     width: '100%',
