@@ -55,7 +55,6 @@ export default function AddressScreen() {
           onChangeText={setInputValue}
           value={inputValue}
           placeholder="Escribe tu dirección"
-          keyboardType="numeric"
         />
         {lat && lng && (
           <>
@@ -169,10 +168,15 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'white',
-    color: 'red',
+    color: '#333333',
+    fontSize: 16,
+    lineHeight: 16,
+    fontFamily: 'GothamBook',
+    fontWeight: '300',
     height: 56,
     borderRadius: 28,
-    paddingVertical: 20,
+    paddingBottom: 20,
+    paddingTop: 22,
     paddingHorizontal: 24,
     shadowColor: '#00000029',
     shadowOffset: { width: 0, height: 3 },
