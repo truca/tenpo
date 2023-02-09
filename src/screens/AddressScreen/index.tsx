@@ -1,5 +1,5 @@
 import {
-  useState, useEffect, useCallback, useContext,
+  useState, useCallback, useContext,
 } from 'react';
 import {
   Alert, StyleSheet, TextInput, TouchableOpacity,
@@ -26,6 +26,10 @@ interface Option {
   value: string;
 }
 
+const failedConnection = async () => new Promise((_, reject) => {
+  setTimeout(() => reject(new Error('fail')), 1000);
+});
+
 export default function AddressScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<Option[]>([]);
@@ -36,6 +40,22 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
   } = useContext(AddressContext);
 
   const fetchAutocomplete = useCallback(async (filter: string) => {
+    const shouldConnectionFail = Math.random() < 0.2;
+
+    if (shouldConnectionFail) {
+      failedConnection().catch(() => {
+        Alert.alert('Solicitud fallida', 'El servicio de Google Maps está caído, Quieres reintentar?', [
+          {
+            text: 'No',
+            onPress: () => {},
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => fetchAutocomplete(filter) },
+        ]);
+      });
+      return;
+    }
+
     const results = await axios.get(
       `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${filter}&components=country:CL&key=${GOOGLE_MAPS_API_KEY}`,
     );
@@ -53,7 +73,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
     setOptions(newOptions);
   }, [setOptions]);
 
-  const fetchPlace = useCallback(
+  const fetchAddressFromCoordinates = useCallback(
     async (locationArg: Location.LocationObjectCoords | null) => {
       if (locationArg) {
         const results = await axios.get(
@@ -99,11 +119,11 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
       setOptions([]);
       setInputValue('');
       setCoords({ lat: userLocation.coords.latitude, lng: userLocation.coords.longitude });
-      fetchPlace(userLocation.coords);
+      fetchAddressFromCoordinates(userLocation.coords);
     } else {
       Alert.alert('Error getting your location!');
     }
-  }, [fetchPlace, setCoords]);
+  }, [fetchAddressFromCoordinates, setCoords]);
 
   return (
     <View style={styles.container}>
