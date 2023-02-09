@@ -12,6 +12,7 @@ import { FontName } from '../../components/StyledText/types';
 import SearchSvg from '../../assets/images/search.svg';
 import LocationSvg from '../../assets/images/location.svg';
 import Avatar from '../../assets/images/avatar.png';
+import MotoBoy from '../../assets/images/moto_boy.png';
 import BRANDS from '../../data/brands';
 import CATEGORIES from '../../data/categories';
 import FAVORITE_PRODUCTS from '../../data/favoriteProducts';
@@ -21,10 +22,10 @@ import CategoryItem from './CategoryItem';
 import FavoriteItem from './FavoriteItem';
 import { AddressContext } from '../../contexts/AddressContext';
 
-const IMAGE_URLS = ['https://cdn.pixabay.com/photo/2017/05/19/07/34/teacup-2325722__340.jpg', 'https://cdn.pixabay.com/photo/2017/05/02/22/43/mushroom-2279558__340.jpg'];
+const IMAGE_URLS = [MotoBoy, MotoBoy, MotoBoy];
 
 export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>) {
-  const CarouselItems = IMAGE_URLS.map((url) => <CarouselItem key={url} imageSrc={url} />);
+  const CarouselItems = IMAGE_URLS.map((url, idx) => <CarouselItem key={idx} imageSrc={url} />);
   const { address } = useContext(AddressContext);
 
   const BrandItems = BRANDS.map((brand) => (
