@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
 
-import ModalScreen from '../screens/ModalScreen';
+import StoreModal from '../screens/StoreModal';
 import RootScreen from '../screens/RootScreen';
 import AddressScreen from '../screens/AddressScreen';
 import StoresScreen from '../screens/StoresScreen';
@@ -39,9 +39,6 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={RootScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Address" component={AddressScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Stores" component={StoresScreen} options={{ headerShown: false }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
       <Stack.Group
         screenOptions={{
           presentation: 'transparentModal',
@@ -49,6 +46,7 @@ function RootNavigator() {
         }}
       >
         <Stack.Screen name="MaxDistanceModal" component={MaxDistanceModal} />
+        <Stack.Screen name="StoreModal" component={StoreModal} />
       </Stack.Group>
     </Stack.Navigator>
   );

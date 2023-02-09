@@ -14,7 +14,7 @@ import { RootStackScreenProps } from '../../types';
 import { AddressContext } from '../../contexts/AddressContext';
 import { STORES } from './stores';
 
-export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'>) {
+export default function StoresScreen({ navigation }: RootStackScreenProps<'Stores'>) {
   const [inputValue, setInputValue] = useState('');
   const [filterClosedStores, setFilterClosedStores] = useState<boolean>(false);
   const { maxDistance, address } = useContext(AddressContext);
@@ -106,25 +106,27 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
         </View>
         )}
         {filteredStores.map((store) => (
-          <View style={styles.storeOption} key={store.id}>
-            <Image style={styles.storeLogo} source={store.logo} />
-            <View style={styles.storeOptionDescription}>
-              <StyledText
-                fontName={FontName.GothamMedium}
-                fontSize={18}
-                style={styles.storeOptionName}
-              >
-                {store.name}
-              </StyledText>
-              <StyledText
-                fontName={FontName.RobotoRegular}
-                fontSize={12}
-                style={styles.storeOptionAddress}
-              >
-                {store.address}
-              </StyledText>
+          <TouchableOpacity onPress={() => navigation.navigate('StoreModal')}>
+            <View style={styles.storeOption} key={store.id}>
+              <Image style={styles.storeLogo} source={store.logo} />
+              <View style={styles.storeOptionDescription}>
+                <StyledText
+                  fontName={FontName.GothamMedium}
+                  fontSize={18}
+                  style={styles.storeOptionName}
+                >
+                  {store.name}
+                </StyledText>
+                <StyledText
+                  fontName={FontName.RobotoRegular}
+                  fontSize={12}
+                  style={styles.storeOptionAddress}
+                >
+                  {store.address}
+                </StyledText>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>

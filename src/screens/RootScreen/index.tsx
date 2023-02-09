@@ -27,7 +27,11 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
   const CarouselItems = IMAGE_URLS.map((url) => <CarouselItem key={url} imageSrc={url} />);
   const { address } = useContext(AddressContext);
 
-  const BrandItems = BRANDS.map((brand) => <BrandItem key={brand.name} brand={brand} />);
+  const BrandItems = BRANDS.map((brand) => (
+    <TouchableOpacity onPress={() => navigation.navigate('StoreModal')}>
+      <BrandItem key={brand.name} brand={brand} />
+    </TouchableOpacity>
+  ));
 
   const CategoryItems = CATEGORIES.map(
     (category) => <CategoryItem key={category.name} category={category} />,

@@ -22,4 +22,3 @@ export default function App() {
     );
   }
 }
-//<StatusBar hidden={false} backgroundColor="transparent" />
