@@ -26,4 +26,32 @@ const fontStylesHelper = (name: FontName, fontSize: number): StyleProp<TextStyle
   }
 };
 
+interface ReturnType {
+  ['font-family']: string, ['font-size']: number, ['font-weight']?: string
+}
+export const fontStylesHelperCSS = (name: FontName, fontSize: number): ReturnType => {
+  switch (name) {
+    case FontName.GothamLight:
+      return { 'font-family': 'GothamLight', 'font-size': fontSize };
+    case FontName.GothamMedium:
+      return { 'font-family': 'GothamMedium', 'font-size': fontSize };
+    case FontName.GothamBook:
+      return { 'font-family': 'GothamBook', 'font-size': fontSize };
+    case FontName.GothamBold:
+      return { 'font-family': 'GothamBold', 'font-size': fontSize };
+    case FontName.GothamUltra:
+      return { 'font-family': 'GothamUltra', 'font-size': fontSize };
+
+    case FontName.RobotoLight:
+      return { 'font-family': 'Roboto', 'font-weight': '100', 'font-size': fontSize };
+    case FontName.RobotoRegular:
+      return { 'font-family': 'Roboto', 'font-weight': 'normal', 'font-size': fontSize };
+    case FontName.RobotoBlack:
+      return { 'font-family': 'Roboto', 'font-weight': 'bold', 'font-size': fontSize };
+
+    default:
+      return { 'font-family': 'GothamBook', 'font-size': fontSize };
+  }
+};
+
 export default fontStylesHelper;
