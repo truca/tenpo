@@ -70,8 +70,8 @@ export default function MaxDistanceModal({ navigation, route }: RootStackScreenP
             region={{
               latitude: lat,
               longitude: lng,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
             }}
           >
             <Marker

@@ -11,6 +11,7 @@ import axios from 'axios';
 import StyledText from '../../components/StyledText';
 import { FontName } from '../../components/StyledText/types';
 import LocationSvg from '../../assets/images/location.svg';
+import ClearSvg from '../../assets/images/clear.svg';
 
 import { View } from '../../components/Themed';
 import { GOOGLE_MAPS_API_KEY } from '../../constants/ApiKeys';
@@ -21,7 +22,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
   const [inputValue, setInputValue] = useState('');
   const [addressSecondLine, setAddressSecondLine] = useState('');
   const {
-    address, setAddress, coords, setCoords,
+    address, setAddress, coords, setCoords, clearFullAddress,
   } = useContext(AddressContext);
 
   const fetchPlace = useCallback(
@@ -30,7 +31,9 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         const results = await axios.get(
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationArg?.latitude},${locationArg?.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
         );
-        setAddress(results.data.results[0].formatted_address);
+        const newAddress = results.data.results[0].formatted_address;
+        if (newAddress.length > 31) setAddress(`${newAddress.substr(0, 31)}…`);
+        else setAddress(newAddress);
       }
     },
     [setAddress],
@@ -71,12 +74,29 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
         </View>
       </View>
       <View style={styles.contentContainer}>
-        <TextInput
-          style={styles.input}
-          onChangeText={setInputValue}
-          value={address || inputValue}
-          placeholder="Escribe tu dirección"
-        />
+        <View style={styles.addressInputContainer}>
+          <TextInput
+            style={styles.addressInput}
+            onChangeText={setInputValue}
+            value={address || inputValue}
+            placeholder="Escribe tu dirección"
+          />
+
+          {address && (
+          <TouchableOpacity
+            style={{
+              zIndex: 2, position: 'absolute', right: 25, top: -8,
+            }}
+            onPress={clearFullAddress}
+          >
+            <ClearSvg
+              width={19}
+              height={19}
+            />
+          </TouchableOpacity>
+          )}
+
+        </View>
         {coords ? (
           <>
             <MapView
@@ -118,7 +138,7 @@ export default function AddressScreen({ navigation }: RootStackScreenProps<'Root
                 numberOfLines={5}
                 underlineColorAndroid="transparent"
               />
-              <TouchableOpacity onPress={() => navigation.replace('Stores')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Stores')}>
                 <View style={styles.submitButton}>
                   <StyledText
                     fontName={FontName.GothamBook}
@@ -183,7 +203,13 @@ const styles = StyleSheet.create({
   loadingAddress: {
     color: '#ADADAD',
   },
-  input: {
+  addressInputContainer: {
+    zIndex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  addressInput: {
+    overflow: 'hidden',
     backgroundColor: 'white',
     color: '#333333',
     fontSize: 16,

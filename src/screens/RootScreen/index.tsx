@@ -41,12 +41,12 @@ export default function RootScreen({ navigation }: RootStackScreenProps<'Root'>)
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image style={styles.avatar} source={Avatar} />
-        <TouchableOpacity onPress={() => navigation.replace('Address')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Address')}>
           <SearchSvg width={24} height={24} />
         </TouchableOpacity>
       </View>
       <Carousel height={216} pagingEnabled items={CarouselItems} />
-      <TouchableOpacity onPress={() => navigation.replace('Address')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Address')}>
         <View style={styles.addressContainer}>
           <LocationSvg width={22} height={25} />
           <View style={styles.addressTextContainer}>

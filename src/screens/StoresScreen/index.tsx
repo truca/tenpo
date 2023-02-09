@@ -17,7 +17,7 @@ import { STORES } from './stores';
 export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'>) {
   const [inputValue, setInputValue] = useState('');
   const [filterClosedStores, setFilterClosedStores] = useState<boolean>(false);
-  const { maxDistance } = useContext(AddressContext);
+  const { maxDistance, address } = useContext(AddressContext);
 
   const filteredStores = useMemo(() => {
     if (!inputValue) return [];
@@ -49,7 +49,7 @@ export default function StoresScreen({ navigation }: RootStackScreenProps<'Root'
               fontSize={18}
               style={styles.title}
             >
-              Calle Agustinas #546
+              {address}
             </StyledText>
           </View>
 
