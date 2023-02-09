@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Alert, StyleSheet, TextInput } from 'react-native';
+import {
+  Alert, Button, StyleSheet, TextInput, TouchableOpacity,
+} from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -11,7 +13,8 @@ import { View } from '../../components/Themed';
 
 export default function AddressScreen() {
   const [inputValue, setInputValue] = useState('');
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [addressSecondLine, setAddressSecondLine] = useState('');
+  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,15 +28,12 @@ export default function AddressScreen() {
       const userLocation = await Location.getCurrentPositionAsync(
         { accuracy: Location.LocationAccuracy.Highest },
       );
-      setLocation(userLocation);
+      setLocation(userLocation.coords);
     })();
   }, []);
 
-  const position = JSON.stringify(
-    { latitude: location?.coords?.latitude, longitude: location?.coords?.longitude },
-  );
-  const lat = location?.coords.latitude;
-  const lng = location?.coords.longitude;
+  const lat = location?.latitude;
+  const lng = location?.longitude;
 
   return (
     <View style={styles.container}>
@@ -57,32 +57,72 @@ export default function AddressScreen() {
           placeholder="Escribe tu dirección"
           keyboardType="numeric"
         />
+        {lat && lng && (
+          <>
+            <MapView
+              style={styles.map}
+              region={{
+                latitude: lat,
+                longitude: lng,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+            >
+              <Marker
+                title="YIKES, Inc."
+                description="Web Design and Developmentt"
+                coordinate={{ latitude: lat, longitude: lng }}
+                icon={require('../../assets/images/marker.png')}
+              />
+            </MapView>
+            <View style={styles.addressForm}>
+              <StyledText
+                fontName={FontName.GothamBold}
+                fontSize={16}
+                style={styles.addressSecondLineTitle}
+              >
+                Agregar información de entrega
+              </StyledText>
+              <StyledText
+                fontName={FontName.GothamBook}
+                fontSize={14}
+                style={styles.addressSecondLineDescription}
+              >
+                Depto, Oficina, Piso, Block,
+              </StyledText>
+              <TextInput
+                style={styles.addressSecondLineInput}
+                value={addressSecondLine}
+                onChangeText={setAddressSecondLine}
+                multiline
+                numberOfLines={5}
+                underlineColorAndroid="transparent"
+              />
+              <TouchableOpacity onPress={() => Alert.alert('Submit')}>
+                <View style={styles.submitButton}>
+                  <StyledText
+                    fontName={FontName.GothamBook}
+                    fontSize={14}
+                    style={styles.submitText}
+                  >
+                    Agregar Dirección
+                  </StyledText>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {(!lat || !lng) && (
         <View style={styles.loadingContainer}>
           <StyledText
-            fontName={FontName.GothamLight}
-            fontSize={18}
+            fontName={FontName.GothamBold}
+            fontSize={14}
             style={styles.loadingAddress}
           >
             Esperando tu ubicación…
           </StyledText>
         </View>
-        {lat && lng && (
-        <MapView
-          style={styles.map}
-          region={{
-            latitude: lat,
-            longitude: lng,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-        >
-          <Marker
-            title="YIKES, Inc."
-            description="Web Design and Developmentt"
-            coordinate={{ latitude: lat, longitude: lng }}
-            icon={require('../../assets/images/marker.png')}
-          />
-        </MapView>
         )}
       </View>
 
@@ -94,7 +134,6 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262626',
   },
   headerContainer: {
     height: 160,
@@ -114,8 +153,9 @@ const styles = StyleSheet.create({
     color: '#008F7E',
   },
   contentContainer: {
-    backgroundColor: '#d9d9d9',
+    backgroundColor: '#fff',
     flex: 1,
+    position: 'relative',
   },
   loadingContainer: {
     width: '100%',
@@ -138,11 +178,52 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.29,
     shadowRadius: 0,
-    position: 'relative',
-    bottom: 28,
+    position: 'absolute',
+    top: -28,
+    width: '100%',
+    zIndex: 1,
   },
   map: {
-    width: 200,
+    width: '100%',
     height: 200,
+  },
+  addressForm: {
+    display: 'flex',
+    width: '100%',
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
+    paddingTop: 33,
+  },
+  addressSecondLineTitle: {
+    color: '#333333',
+    lineHeight: 22,
+  },
+  addressSecondLineDescription: {
+    color: '#ADADAD',
+    lineHeight: 20,
+  },
+  addressSecondLineInput: {
+    width: '100%',
+    marginTop: 13,
+    alignItems: 'flex-start',
+    display: 'flex',
+    borderColor: '#e8e8e8',
+    borderRadius: 8,
+    borderStyle: 'solid',
+    borderWidth: 1,
+  },
+  submitButton: {
+    backgroundColor: '#00BAA4',
+    paddingVertical: 20,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 36,
+    marginHorizontal: 8,
+  },
+  submitText: {
+    textTransform: 'uppercase',
+    color: '#FFFFFF',
+    lineHeight: 20,
+    fontWeight: '700',
   },
 });
